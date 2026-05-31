@@ -1,0 +1,737 @@
+
+<style>
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f7f7f7;
+    --bg-tertiary: #efefef;
+    --text-primary: #1a1a1a;
+    --text-secondary: #666666;
+    --text-tertiary: #999999;
+    --border-primary: #e0e0e0;
+    --border-secondary: #d0d0d0;
+    --accent-blue: #3178C6;
+    --accent-green: #3C873A;
+    --accent-cyan: #336791;
+    --accent-red: #c0392b;
+    --accent-purple: #2E86AB;
+    --accent-orange: #E67E22;
+    --accent-dark: #1A1A2E;
+    --accent-pink: #D82C20;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-primary: #0d0d0d;
+      --bg-secondary: #1a1a1a;
+      --bg-tertiary: #262626;
+      --text-primary: #ffffff;
+      --text-secondary: #b0b0b0;
+      --text-tertiary: #808080;
+      --border-primary: #333333;
+      --border-secondary: #404040;
+    }
+  }
+
+  body.dark-mode {
+    --bg-primary: #0d0d0d;
+    --bg-secondary: #1a1a1a;
+    --bg-tertiary: #262626;
+    --text-primary: #ffffff;
+    --text-secondary: #b0b0b0;
+    --text-tertiary: #808080;
+    --border-primary: #333333;
+    --border-secondary: #404040;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-sans);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-primary) 100%);
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    width: 150vh;
+    align-items: center;
+    margin: auto;
+    padding-top: 60px;
+    color: var(--text-primary);
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+
+
+  .theme-toggle {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+    border: none;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+    z-index: 1000;
+  }
+  .theme-toggle:hover {
+    transform: scale(1.1) rotate(20deg);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  }
+
+  .phase-nav {
+    display: flex; gap: 8px; flex-wrap: wrap; padding: 1.5rem 0 2rem;
+    justify-content: center;
+    background: linear-gradient(180deg, transparent 0%, var(--bg-tertiary) 100%);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+  }
+  .phase-btn {
+    padding: 8px 16px; border-radius: 24px; border: 1px solid var(--border-secondary);
+    background: var(--bg-primary); color: var(--text-secondary);
+    font-size: 12px; cursor: pointer; transition: all .25s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: var(--font-sans); font-weight: 500; position: relative;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  }
+  .phase-btn:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+  }
+  .phase-btn.active {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 8px 20px rgba(49, 120, 198, 0.4);
+    transform: scale(1.05);
+  }
+
+  .progress-bar {
+    height: 4px; background: var(--border-primary); border-radius: 4px;
+    margin-bottom: 2rem; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+  }
+  .progress-fill {
+    height: 100%; border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+    transition: width .6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 0 12px var(--accent-blue);
+  }
+
+  .phase-card { display: none; }
+  .phase-card.active {
+    display: block;
+    animation: fadeInUp 0.4s ease-out;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .phase-header {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    border: 1px solid var(--border-secondary);
+  }
+  .phase-tag {
+    display: inline-block; font-size: 11px; font-weight: 600;
+    padding: 6px 12px; border-radius: 20px; margin-bottom: 12px;
+    text-transform: uppercase; letter-spacing: 0.08em;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  }
+  .phase-title {
+    font-size: 28px; font-weight: 700;
+    color: var(--text-primary); margin: 12px 0 8px;
+  }
+  .phase-sub {
+    font-size: 15px; color: var(--text-secondary);
+    line-height: 1.6; margin-top: 8px;
+  }
+
+  .week-label {
+    font-size: 11px; font-weight: 600; color: var(--text-tertiary);
+    text-transform: uppercase; letter-spacing: .08em; margin-bottom: 1.2rem;
+    opacity: 0.7;
+  }
+
+  .skills-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(0,1fr));
+    gap: 14px; margin-bottom: 2rem;
+  }
+  .skill-card {
+    border-radius: 10px;
+    padding: 16px; border: 1px solid var(--border-secondary);
+    transition: all 0.25s ease;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+  .skill-card[data-color="blue"] {
+    background: linear-gradient(135deg, rgba(49, 120, 198, 0.1) 0%, rgba(46, 134, 171, 0.05) 100%);
+  }
+  .skill-card[data-color="green"] {
+    background: linear-gradient(135deg, rgba(60, 135, 58, 0.1) 0%, rgba(46, 134, 171, 0.05) 100%);
+  }
+  .skill-card[data-color="cyan"] {
+    background: linear-gradient(135deg, rgba(51, 103, 145, 0.1) 0%, rgba(46, 134, 171, 0.05) 100%);
+  }
+  .skill-card[data-color="red"] {
+    background: linear-gradient(135deg, rgba(192, 57, 43, 0.1) 0%, rgba(216, 44, 32, 0.05) 100%);
+  }
+  .skill-card[data-color="purple"] {
+    background: linear-gradient(135deg, rgba(46, 134, 171, 0.1) 0%, rgba(123, 45, 139, 0.05) 100%);
+  }
+  .skill-card[data-color="orange"] {
+    background: linear-gradient(135deg, rgba(230, 126, 34, 0.1) 0%, rgba(46, 134, 171, 0.05) 100%);
+  }
+  .skill-card[data-color="dark"] {
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.1) 0%, rgba(46, 134, 171, 0.05) 100%);
+  }
+  .skill-card[data-color="pink"] {
+    background: linear-gradient(135deg, rgba(216, 44, 32, 0.1) 0%, rgba(192, 57, 43, 0.05) 100%);
+  }
+  .skill-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .skill-card:hover {
+    border-color: var(--text-primary);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+    transform: translateY(-4px);
+  }
+  .skill-card:hover::before { opacity: 1; }
+  .skill-card .sk-icon { font-size: 20px; margin-bottom: 8px; }
+  .skill-card .sk-name {
+    font-size: 13px; font-weight: 600;
+    color: var(--text-primary); margin-bottom: 6px;
+  }
+  .skill-card .sk-desc {
+    font-size: 12px; color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .resources-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    border-radius: 10px;
+    border: 1px solid var(--border-secondary);
+  }
+  .resources-title {
+    font-size: 13px; font-weight: 600;
+    color: var(--text-primary); margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .resource-list { display: flex; flex-direction: column; gap: 10px; }
+  .resource-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 8px 0;
+    transition: all 0.2s ease;
+  }
+  .resource-item:hover { padding-left: 4px; }
+  .resource-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    margin-top: 5px; flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+  }
+  .resource-text {
+    font-size: 13px; color: var(--text-secondary);
+    line-height: 1.6;
+  }
+  .resource-text strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  .deliverable-box {
+    border: 1px solid var(--border-secondary);
+    border-radius: 10px;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    margin-bottom: 1.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .deliverable-box::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+  }
+  .deliverable-box .d-label {
+    font-size: 11px; font-weight: 600;
+    color: var(--text-tertiary);
+    text-transform: uppercase; letter-spacing: .08em;
+    margin-bottom: 8px;
+  }
+  .deliverable-box .d-text {
+    font-size: 13px; color: var(--text-primary);
+    line-height: 1.7;
+  }
+
+  .advice-box {
+    border-left: 3px solid var(--accent-orange);
+    padding: 16px; padding-left: 18px;
+    margin-bottom: 2rem;
+    background: linear-gradient(135deg, rgba(230, 126, 34, 0.05) 0%, var(--bg-secondary) 100%);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    position: relative;
+  }
+  .advice-box::before {
+    content: '💡';
+    position: absolute;
+    top: 16px; right: 16px;
+    opacity: 0.5;
+    font-size: 24px;
+  }
+  .advice-box .a-label {
+    font-size: 11px; font-weight: 600;
+    color: var(--accent-orange);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .advice-box .a-text {
+    font-size: 13px; color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  .nav-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 2.5rem; gap: 16px;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+    border-radius: 10px;
+    border: 1px solid var(--border-secondary);
+  }
+  .nav-btn {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 18px;
+    border: 1px solid var(--border-secondary);
+    border-radius: 8px;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-size: 13px; cursor: pointer; font-family: var(--font-sans);
+    font-weight: 500; transition: all .25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  .nav-btn:hover {
+    background: var(--bg-secondary);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+    border-color: var(--text-primary);
+  }
+  .nav-btn.primary {
+    background: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-purple) 100%);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 16px rgba(49, 120, 198, 0.3);
+  }
+  .nav-btn.primary:hover {
+    box-shadow: 0 8px 24px rgba(49, 120, 198, 0.4);
+    transform: translateY(-3px);
+  }
+  .nav-btn:disabled {
+    opacity: 0.4; cursor: default;
+  }
+  .page-indicator {
+    font-size: 13px; color: var(--text-secondary);
+    font-weight: 500;
+  }
+  .you-know {
+    display: inline-block; font-size: 11px;
+    padding: 6px 10px; border-radius: 12px;
+    background: linear-gradient(135deg, var(--accent-green) 0%, rgba(60, 135, 58, 0.5) 100%);
+    color: white;
+    margin-left: 8px; font-weight: 600;
+    border: 1px solid var(--accent-green);
+  }
+</style>
+</style>
+
+<h2 class="sr-only">CAIE MCQ Platform learning roadmap — 12 phases from your current skills to a fully deployed project</h2>
+
+<button class="theme-toggle" id="theme-toggle" title="Toggle dark mode">🌙</button>
+<div class="phase-nav" id="phase-nav"></div>
+<div class="progress-bar"><div class="progress-fill" id="progress" style="width:8.3%"></div></div>
+<div id="phases-container"></div>
+
+<script>
+const phases = [
+  {
+    id: 0,
+    tag: "Phase 1 · Weeks 1–2",
+    tagColor: "#3178C6",
+    title: "TypeScript + Next.js 14 App Router",
+    sub: "You already know React — this upgrades your existing knowledge to production standard.",
+    weeks: "Weeks 1–2",
+    youKnow: true,
+    skills: [
+      { icon: "✦", name: "TypeScript basics", desc: "Types, interfaces, generics. Start typing your existing JS code." },
+      { icon: "✦", name: "Next.js App Router", desc: "File-based routing, layouts, loading states — different from Pages Router." },
+      { icon: "✦", name: "Server vs client components", desc: "The big new concept in Next.js 14. Know when to use each." },
+      { icon: "✦", name: "Tailwind + shadcn/ui setup", desc: "Install and use pre-built components you'll rely on throughout." },
+    ],
+    resources: [
+      { label: "Total TypeScript by Matt Pocock", note: "Free beginner section covers everything you need" },
+      { label: "Next.js 14 official docs", note: "App Router section — read the routing and data fetching pages" },
+      { label: "shadcn/ui docs", note: "Copy components directly — understand the code, don't just paste" },
+    ],
+    deliverable: "Build the full quiz UI with mock data — subject dropdown, question cards, A/B/C/D buttons, score screen. Everything hardcoded. No API yet.",
+    advice: "Don't skip TypeScript just because it feels slow at first. Every hour you spend learning it now saves you hours of debugging later. Start by just adding : string, : number to your variables.",
+  },
+  {
+    id: 1,
+    tag: "Phase 2 · Weeks 3–4",
+    tagColor: "#3C873A",
+    title: "Node.js + Express backend",
+    sub: "Your first real backend. This is where most frontend devs level up massively.",
+    weeks: "Weeks 3–4",
+    youKnow: false,
+    skills: [
+      { icon: "✦", name: "How HTTP actually works", desc: "Methods, status codes, headers, request/response cycle. The foundation of everything." },
+      { icon: "✦", name: "Express.js routing", desc: "app.get(), app.post(), route params, query strings, middleware pattern." },
+      { icon: "✦", name: "TypeScript on Node.js", desc: "ts-node, tsconfig for backend. Shared types between frontend and backend." },
+      { icon: "✦", name: "REST API design", desc: "Resource naming, HTTP verbs, consistent response shapes, error handling." },
+    ],
+    resources: [
+      { label: "The Odin Project — NodeJS section", note: "Free, project-based, excellent for absolute beginners to backend" },
+      { label: "freeCodeCamp Express.js tutorial", note: "2 hours, covers everything you need" },
+      { label: "REST API design best practices", note: "Google 'REST API design guide' — read any good article" },
+    ],
+    deliverable: "A working Express server with GET /questions, GET /subjects endpoints. Returns hardcoded JSON for now. Test with Postman or Thunder Client (VS Code extension).",
+    advice: "The backend clicked for me when I stopped thinking 'server' and started thinking 'a function that reads a request and writes a response'. Every route is just a function. That's it.",
+  },
+  {
+    id: 2,
+    tag: "Phase 3 · Week 5",
+    tagColor: "#336791",
+    title: "PostgreSQL + Prisma ORM",
+    sub: "Your first real database. This is the skill that opens the most career doors.",
+    weeks: "Week 5",
+    youKnow: false,
+    skills: [
+      { icon: "✦", name: "Relational database thinking", desc: "Tables, rows, columns, primary keys, foreign keys. Think in relations, not objects." },
+      { icon: "✦", name: "SQL fundamentals", desc: "SELECT, WHERE, JOIN, GROUP BY. You'll write real SQL before letting Prisma abstract it." },
+      { icon: "✦", name: "Prisma schema", desc: "Define your models. Run prisma migrate dev. Get a fully typed DB client." },
+      { icon: "✦", name: "CRUD operations", desc: "prisma.question.findMany(), create(), update(), delete(). The four operations you'll use 90% of the time." },
+    ],
+    resources: [
+      { label: "SQLBolt.com", note: "Free, interactive SQL lessons in the browser. Do all 12 lessons." },
+      { label: "Prisma official docs — Getting Started", note: "Follow their Next.js + Prisma quickstart exactly" },
+      { label: "Supabase dashboard", note: "Sign up, create a project, use the Table Editor to see your data visually" },
+    ],
+    deliverable: "Your Express API now reads real data from PostgreSQL via Prisma. Create the questions and subjects tables. Manually insert 5 test questions and fetch them from your API.",
+    advice: "Write raw SQL first (in the Supabase SQL editor) before using Prisma. Understanding what SELECT * FROM questions WHERE subject_id = 1 does makes you a much better developer than someone who only ever used an ORM.",
+  },
+  {
+    id: 3,
+    tag: "Phase 4 · Week 6",
+    tagColor: "#c0392b",
+    title: "JWT Authentication",
+    sub: "Every backend interview tests this. Build it manually so you truly understand it.",
+    weeks: "Week 6",
+    youKnow: false,
+    skills: [
+      { icon: "✦", name: "Hashing vs encryption", desc: "bcrypt hashes passwords one-way. You never store plaintext, never decrypt. Just compare hashes." },
+      { icon: "✦", name: "JSON Web Tokens (JWT)", desc: "Header.Payload.Signature. The payload carries user data. The signature proves it wasn't tampered with." },
+      { icon: "✦", name: "Access + refresh tokens", desc: "Short-lived access token (15 min) + long-lived refresh token (7 days). Know why both exist." },
+      { icon: "✦", name: "Auth middleware", desc: "A function that runs before your route handler. Reads the token, verifies it, attaches user to req." },
+    ],
+    resources: [
+      { label: "Fireship — JWT explained in 100 seconds", note: "Watch this first. Perfect 2-minute overview." },
+      { label: "Web Dev Simplified — Node.js Auth tutorial", note: "He builds it from scratch. Follow along exactly." },
+      { label: "jwt.io debugger", note: "Paste any JWT and see the decoded payload. Do this while learning." },
+    ],
+    deliverable: "POST /auth/register and POST /auth/login endpoints. Protected GET /user/history route. Test that hitting a protected route without a token returns 401.",
+    advice: "Don't use Clerk, Auth0, or NextAuth yet. Build JWT auth manually once so you actually understand what those services are doing for you. You'll use them in future projects — but not this one.",
+  },
+  {
+    id: 4,
+    tag: "Phase 5 · Week 7",
+    tagColor: "#2E86AB",
+    title: "Python + PDF parsing",
+    sub: "Your first Python. The language itself is easy — focus on the PDF parsing logic.",
+    weeks: "Week 7",
+    youKnow: false,
+    skills: [
+      { icon: "✦", name: "Python basics", desc: "Variables, loops, functions, f-strings, lists, dicts. 1 hour of syntax, then build." },
+      { icon: "✦", name: "Virtual environments", desc: "python -m venv venv. Activate it. pip install. Always use venvs — never install globally." },
+      { icon: "✦", name: "PyMuPDF (fitz)", desc: "Open a PDF, extract text page by page, extract images. The core of your ingestion script." },
+      { icon: "✦", name: "Regex for text parsing", desc: "re.findall(), re.search(). Match question numbers, A/B/C/D options from raw PDF text." },
+    ],
+    resources: [
+      { label: "Automate the Boring Stuff with Python", note: "Free online. Read chapters 1–6 for the basics. Then chapter 15 for file handling." },
+      { label: "PyMuPDF docs — pymupdf.io", note: "Tutorial section. Try open(), load_page(), get_text() on one of your CAIE PDFs." },
+      { label: "Regex101.com", note: "Test your regex patterns against real extracted text from your PDFs." },
+    ],
+    deliverable: "A Python script that opens one CAIE Chemistry past paper PDF, extracts the 40 questions and their options, and prints them to the console as structured data.",
+    advice: "PDF parsing is messy. Your first attempt will get 30 out of 40 questions. Iterate. Print the raw text first, understand the structure, then build your regex. This is real engineering — there's no clean solution.",
+  },
+  {
+    id: 5,
+    tag: "Phase 6 · Week 8",
+    tagColor: "#2E86AB",
+    title: "Google Drive API + FastAPI",
+    sub: "Turn your script into a real microservice. Learn how services talk to each other.",
+    weeks: "Week 8",
+    youKnow: false,
+    skills: [
+      { icon: "✦", name: "Google Service Account", desc: "Create credentials in Google Cloud Console. Share your Drive folder with the service account email." },
+      { icon: "✦", name: "Google Drive API", desc: "List files in a folder, download file content by ID. Two operations you'll use repeatedly." },
+      { icon: "✦", name: "FastAPI basics", desc: "@app.get(), @app.post(), Pydantic models for request validation. Much cleaner than Flask." },
+      { icon: "✦", name: "Calling your DB from Python", desc: "Use supabase-py or psycopg2 to insert parsed questions directly into PostgreSQL." },
+    ],
+    resources: [
+      { label: "Google Cloud Console quickstart", note: "Enable Drive API, create a Service Account, download credentials JSON." },
+      { label: "FastAPI official tutorial", note: "fastapi.tiangolo.com — do the first 10 pages. 2 hours max." },
+      { label: "Supabase Python docs", note: "supabase-py GitHub README has all the examples you need." },
+    ],
+    deliverable: "Run your FastAPI service locally, hit POST /ingest?subject=chemistry, and watch it fetch PDFs from Drive, parse all questions, and insert them into your PostgreSQL database. Check Supabase dashboard to confirm the rows.",
+    advice: "This is the hardest phase. When something fails, add print() statements everywhere. The most common problems are: wrong folder ID, service account not shared with the folder, and PDF text extracted with extra whitespace breaking your regex.",
+  },
+  {
+    id: 6,
+    tag: "Phase 7 · Week 9",
+    tagColor: "#E67E22",
+    title: "AWS S3 — cloud file storage",
+    sub: "Your first AWS service. This skill alone will impress interviewers.",
+    weeks: "Week 9",
+    youKnow: false,
+    skills: [
+      { icon: "✦", name: "AWS account + IAM", desc: "Create an account, create an IAM user with S3-only permissions. Never use root credentials in code." },
+      { icon: "✦", name: "S3 buckets", desc: "Create a bucket, understand regions, set bucket policy for public reads on your image folder." },
+      { icon: "✦", name: "boto3 (Python AWS SDK)", desc: "s3.upload_fileobj(), s3.put_object(). Upload extracted diagram images from PyMuPDF." },
+      { icon: "✦", name: "Storing URLs in PostgreSQL", desc: "After upload, save the public S3 URL in your question_images table. Your frontend uses this URL." },
+    ],
+    resources: [
+      { label: "AWS Free Tier — aws.amazon.com/free", note: "5GB S3 storage free. Your project won't come close to this." },
+      { label: "AWS S3 official getting started guide", note: "Read the 'How S3 works' page and the 'Creating a bucket' tutorial." },
+      { label: "boto3 docs — S3 examples", note: "boto3.amazonaws.com/v1/documentation — S3 upload examples section." },
+    ],
+    deliverable: "Your Python ingestion service now extracts images from PDFs using PyMuPDF, uploads them to S3, and stores the public URL in the database. Open a URL in your browser and see the diagram image.",
+    advice: "IAM is confusing at first. The mental model: your IAM user is like a staff account with a keycard that only opens specific doors. The policy says which doors. Give the minimum permissions needed — just S3 read/write to your specific bucket.",
+  },
+  {
+    id: 7,
+    tag: "Phase 8 · Week 10",
+    tagColor: "#D82C20",
+    title: "Redis — caching",
+    sub: "One of the most-asked backend concepts in senior interviews. Learn it here.",
+    weeks: "Week 10",
+    youKnow: false,
+    skills: [
+      { icon: "✦", name: "What caching is (and when not to)", desc: "Store expensive computation results. Serve from memory instead of DB. Know cache invalidation basics." },
+      { icon: "✦", name: "Redis data structures", desc: "Strings for simple cache. Sets for token blacklist. Sorted sets for leaderboards." },
+      { icon: "✦", name: "ioredis (Node.js client)", desc: "redis.get(), redis.set(), redis.setex() (with expiry). These three cover 90% of use cases." },
+      { icon: "✦", name: "Cache-aside pattern", desc: "Check Redis first. If miss, query DB, store in Redis, return result. The universal caching pattern." },
+    ],
+    resources: [
+      { label: "Redis University — RU101 (free)", note: "university.redis.io — Introduction to Redis Data Structures. 3 hours." },
+      { label: "Railway Redis plugin", note: "Add a Redis instance to your Railway project. Get the connection string." },
+      { label: "ioredis npm docs", note: "5 minutes of reading. It's a very simple API." },
+    ],
+    deliverable: "Your GET /questions endpoint checks Redis first. Cache miss: query DB, store result with 10-minute expiry. Cache hit: return cached data. Log 'CACHE HIT' or 'CACHE MISS' so you can see it working.",
+    advice: "Redis is addictive once you see the speed difference. Cache a slow query, add console.log timings, watch it go from 80ms to 2ms. That visceral improvement makes the concept stick forever.",
+  },
+  {
+    id: 8,
+    tag: "Phase 9 · Week 11",
+    tagColor: "#1A1A2E",
+    title: "Connect frontend to real API",
+    sub: "The satisfying phase — everything you built starts working together.",
+    weeks: "Week 11",
+    youKnow: true,
+    skills: [
+      { icon: "✦", name: "Axios / fetch with TypeScript", desc: "Typed API responses. Create a reusable api.ts client. Handle loading and error states properly." },
+      { icon: "✦", name: "CORS configuration", desc: "Why browsers block cross-origin requests. Configure your Express backend to allow your Next.js frontend." },
+      { icon: "✦", name: "Environment variables in Next.js", desc: "NEXT_PUBLIC_ prefix for browser-accessible vars. Keep API URLs in .env.local, never hardcode." },
+      { icon: "✦", name: "Zustand store for quiz state", desc: "Current question, selected answers, timer, session ID. All quiz state in one store." },
+    ],
+    resources: [
+      { label: "Axios docs — axios-http.com", note: "You already use fetch — Axios gives you interceptors for auth tokens." },
+      { label: "MDN — CORS explained", note: "Read the 'What is CORS' section. Understanding why it exists matters." },
+      { label: "Zustand docs — zustand-demo.pmnd.rs", note: "The README is the entire documentation. 10 minutes." },
+    ],
+    deliverable: "Full working quiz flow with real data. User selects Chemistry, chooses 2019-2023, gets 20 random questions, answers them, submits, sees score, sees correct answers. All real data from your database.",
+    advice: "This phase feels amazing because everything connects. But also frustrating because you'll find bugs in your API you didn't know were there. That's normal. Your tests exposed edge cases. Fix them.",
+  },
+  {
+    id: 9,
+    tag: "Phase 10 · Week 12",
+    tagColor: "#2496ED",
+    title: "Docker + Docker Compose",
+    sub: "The skill that makes you look like a senior developer to any interviewer.",
+    weeks: "Week 12",
+    youKnow: false,
+    skills: [
+      { icon: "✦", name: "What Docker actually does", desc: "Packages your app + its environment into a container. Runs identically on any machine." },
+      { icon: "✦", name: "Dockerfile", desc: "FROM node:20. WORKDIR, COPY, RUN npm install, CMD. Write one for your Express backend." },
+      { icon: "✦", name: "Docker Compose", desc: "services: backend, frontend, redis, postgres. One docker-compose up starts everything locally." },
+      { icon: "✦", name: ".dockerignore", desc: "Like .gitignore but for Docker. Exclude node_modules, .env, .git. Keeps images small." },
+    ],
+    resources: [
+      { label: "TechWorld with Nana — Docker Tutorial for Beginners", note: "YouTube. 3 hours. Best Docker intro for developers." },
+      { label: "Docker official docs — Get Started", note: "docs.docker.com — do parts 1 through 5." },
+      { label: "Docker Compose docs", note: "The reference for docker-compose.yml keys. Bookmark it." },
+    ],
+    deliverable: "One command (docker compose up) starts your entire local stack: Next.js frontend, Express API, PostgreSQL, Redis. Anyone can clone your repo and run it without installing anything else.",
+    advice: "Docker was confusing until I thought of it as a recipe (Dockerfile) that creates a lunchbox (image) that you open anywhere (container). The recipe is in your repo, the lunchbox is the same everywhere. That's the whole point.",
+  },
+  {
+    id: 10,
+    tag: "Phase 11 · Week 13",
+    tagColor: "#333333",
+    title: "GitHub Actions — CI/CD",
+    sub: "Automate everything. Professional teams do not deploy manually.",
+    weeks: "Week 13",
+    youKnow: false,
+    skills: [
+      { icon: "✦", name: "YAML syntax basics", desc: "Indentation-based, key-value. GitHub Actions workflows are just YAML files." },
+      { icon: "✦", name: "Workflow triggers", desc: "on: push: branches: [main]. On every push to main, run your pipeline." },
+      { icon: "✦", name: "Jobs and steps", desc: "jobs → steps → uses/run. Each step is a command or a pre-built action." },
+      { icon: "✦", name: "GitHub Secrets", desc: "Store your .env variables securely in GitHub Settings → Secrets. Reference in YAML." },
+    ],
+    resources: [
+      { label: "GitHub Actions official quickstart", note: "docs.github.com/actions — follow the Node.js example exactly." },
+      { label: "Vercel GitHub integration", note: "Connect your repo. Auto-deploy frontend on every push. Zero config." },
+      { label: "Railway GitHub integration", note: "Same for backend — connect repo, set env vars, auto-deploy." },
+    ],
+    deliverable: "Push to main → GitHub Actions runs TypeScript check + tests → deploys frontend to Vercel → deploys backend to Railway. The whole pipeline takes under 3 minutes.",
+    advice: "Your first pipeline will fail. Read the error log in the Actions tab on GitHub. It always tells you exactly what went wrong. CI/CD debugging is a real skill — don't ask for help immediately, read the logs first.",
+  },
+  {
+    id: 11,
+    tag: "Phase 12 · Week 14",
+    tagColor: "#7B2D8B",
+    title: "Polish, deploy + launch",
+    sub: "The phase most developers skip. Don't. A shipped project beats a perfect one.",
+    weeks: "Week 14",
+    youKnow: false,
+    skills: [
+      { icon: "✦", name: "Custom domain setup", desc: "Buy a .com on Namecheap (~$10). Point DNS to Vercel. Configure in dashboard." },
+      { icon: "✦", name: "Error tracking", desc: "Add Sentry (free tier) to catch runtime errors you'd never see otherwise." },
+      { icon: "✦", name: "Loading + error states", desc: "Every API call needs a loading state and an error state. Polish these properly." },
+      { icon: "✦", name: "README and portfolio", desc: "Write a README that explains the project, the tech, how to run it. Add it to your portfolio." },
+    ],
+    resources: [
+      { label: "Namecheap.com", note: "Cheapest domains. ~$10/year for a .com." },
+      { label: "Sentry.io", note: "Free for personal projects. 5 minutes to integrate with Next.js." },
+      { label: "readme.so", note: "Visual README builder. Looks professional, takes 20 minutes." },
+    ],
+    deliverable: "Live at a custom domain. Works on mobile. Has a proper README. You can demo it in an interview and explain every line of code.",
+    advice: "Share it. Post it on LinkedIn, Reddit r/learnprogramming, show your friends. Real users find bugs you never imagined. And the confidence from launching something real cannot be bought or faked.",
+  },
+];
+
+let current = 0;
+
+function render() {
+  const nav = document.getElementById('phase-nav');
+  nav.innerHTML = phases.map((p, i) =>
+    `<button class="phase-btn ${i === current ? 'active' : ''}" onclick="goTo(${i})">${i+1}</button>`
+  ).join('');
+
+  document.getElementById('progress').style.width = ((current + 1) / phases.length * 100).toFixed(1) + '%';
+
+  const container = document.getElementById('phases-container');
+  const p = phases[current];
+
+  container.innerHTML = `
+    <div class="phase-card active">
+      <div class="phase-header">
+        <span class="phase-tag" style="background:${p.tagColor}22;color:${p.tagColor}">${p.tag}</span>
+        ${p.youKnow ? '<span class="you-know">You already know some of this ✓</span>' : ''}
+        <div class="phase-title">${p.title}</div>
+        <div class="phase-sub">${p.sub}</div>
+      </div>
+
+      <div class="week-label">What you will learn</div>
+      <div class="skills-grid" style="grid-template-columns: repeat(2, minmax(0,1fr))">
+        ${p.skills.map((s, idx) => {
+          const colors = ['blue', 'green', 'cyan', 'red', 'purple', 'orange', 'dark', 'pink'];
+          const colorIdx = (p.id * 4 + idx) % colors.length;
+          return `
+          <div class="skill-card" data-color="${colors[colorIdx]}">
+            <div class="sk-name">${s.name}</div>
+            <div class="sk-desc">${s.desc}</div>
+          </div>
+        `;
+        }).join('')}
+      </div>
+
+      <div class="resources-section">
+        <div class="resources-title">Best free resources</div>
+        <div class="resource-list">
+          ${p.resources.map((r, i) => `
+            <div class="resource-item">
+              <div class="resource-dot" style="background:${p.tagColor}"></div>
+              <div class="resource-text"><strong>${r.label}</strong> — ${r.note}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="deliverable-box">
+        <div class="d-label">Deliverable — what you build this phase</div>
+        <div class="d-text">${p.deliverable}</div>
+      </div>
+
+      <div class="advice-box">
+        <div class="a-label">Real talk</div>
+        <div class="a-text">${p.advice}</div>
+      </div>
+
+      <div class="nav-row">
+        <button class="nav-btn" onclick="goTo(${current-1})" ${current === 0 ? 'disabled' : ''}>
+          <i class="ti ti-arrow-left" aria-hidden="true"></i> Previous
+        </button>
+        <span class="page-indicator">${current + 1} of ${phases.length}</span>
+        ${current < phases.length - 1
+          ? `<button class="nav-btn primary" onclick="goTo(${current+1})">Next <i class="ti ti-arrow-right" aria-hidden="true"></i></button>`
+          : `<button class="nav-btn primary" onclick="sendPrompt('Give me the code to start Phase 1 — Next.js 14 + TypeScript setup for the CAIE MCQ project')">Start building ↗</button>`
+        }
+      </div>
+    </div>
+  `;
+}
+
+function goTo(i) {
+  if (i < 0 || i >= phases.length) return;
+  current = i;
+  render();
+  window.scrollTo(0, 0);
+}
+
+// Theme toggle functionality
+const themeToggle = document.getElementById('theme-toggle');
+const isDarkMode = localStorage.getItem('dark-mode') === 'true' ||
+                   window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+if (isDarkMode) {
+  document.body.classList.add('dark-mode');
+  themeToggle.textContent = '☀️';
+}
+
+themeToggle.addEventListener('click', () => {
+  document.body.classList.toggle('dark-mode');
+  const isDark = document.body.classList.contains('dark-mode');
+  localStorage.setItem('dark-mode', isDark);
+  themeToggle.textContent = isDark ? '☀️' : '🌙';
+});
+
+render();
+</script>
