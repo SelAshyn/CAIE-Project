@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { MdDashboard, MdOutlineQuiz, MdBarChart, MdSettings, MdLogout } from "react-icons/md";
+import { useAuth } from "../context/AuthContext";
 
 const navItems = [
   { label: "Dashboard", href: "/main", icon: MdDashboard },
@@ -13,46 +14,57 @@ const navItems = [
 
 export function SideBar() {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
+
+  // Derive initials for avatar fallback
+  const initials = user?.name
+    ? user.name.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
+    : "??";
 
   return (
-    <div className="h-full w-72 bg-gray-900 flex flex-col items-center mt-4 text-white p-4">
+    <div className="flex h-full w-full flex-col overflow-hidden bg-white px-4 py-4 text-slate-900">
+      <div className="border-b border-slate-200 pb-4 text-center">
+        <h1 className="text-[2rem] font-black leading-none tracking-tight text-slate-900">
+          MCQPrep
+        </h1>
+        <p className="mt-2 text-sm text-slate-500">
+          Best prep for MCQ's
+        </p>
+      </div>
 
-      <h1 className="text-xl font-bold">MCQPrep</h1>
-      <p className="text-xs m-1 text-gray-500">
-        Best prep for MCQ's
-      </p>
-
-      <hr className="w-full mt-2 border-white/20" />
-
-      <div className="flex items-center gap-3 mt-4 bg-gray-800 p-3 rounded-xl w-full">
-        <img
-          src="https://t3.ftcdn.net/jpg/09/35/18/36/360_F_935183665_aDRAyJE5CmiVtt7pcsFC9h1SC5rgQvh2.jpg"
-          className="rounded-full w-12 h-12 object-cover"
-          alt="profile"
-        />
-        <div className="overflow-hidden">
-          <h2 className="text-sm font-semibold">Rhishav Lamichhane</h2>
-          <p className="text-xs text-gray-400 truncate">
-            rhishavlamichhane@gmail.com
-          </p>
+      <div className="mt-4 flex items-center gap-3 rounded-2xl bg-slate-50 px-4 py-4 shadow-sm ring-1 ring-slate-200">
+        {user?.avatar ? (
+          <img
+            src={user.avatar}
+            className="h-12 w-12 rounded-full object-cover ring-2 ring-slate-200"
+            alt="profile"
+          />
+        ) : (
+          <div className="h-12 w-12 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-bold ring-2 ring-slate-200 shrink-0">
+            {initials}
+          </div>
+        )}
+        <div className="min-w-0">
+          <h2 className="truncate text-sm font-semibold text-slate-900">{user?.name ?? "—"}</h2>
+          <p className="truncate text-xs text-slate-500">{user?.email ?? ""}</p>
         </div>
       </div>
 
-      <nav className="mt-10 w-full">
-        <ul className="space-y-2 w-full">
+      <nav className="mt-8 w-full flex-1">
+        <ul className="space-y-3">
           {navItems.map(({ label, href, icon: Icon }) => {
-            const isActive = pathname === href;
+            const isActive = pathname === href || pathname.startsWith(`${href}/`);
             return (
               <li key={href}>
                 <Link
                   href={href}
-                  className={`flex items-center gap-3 p-3 rounded-lg w-full transition ${
+                  className={`flex w-full items-center gap-3 rounded-xl px-4 py-4 text-base transition duration-200 ${
                     isActive
-                      ? "bg-white text-black font-semibold"
-                      : "bg-gray-700 hover:bg-gray-600"
+                      ? "bg-slate-900 text-white font-semibold shadow-lg shadow-slate-300/60"
+                      : "bg-slate-100 text-slate-700 hover:bg-slate-200"
                   }`}
                 >
-                  <Icon className="text-lg shrink-0" />
+                  <Icon className="shrink-0 text-lg" />
                   {label}
                 </Link>
               </li>
@@ -62,10 +74,10 @@ export function SideBar() {
       </nav>
 
       <button
-        onClick={() => console.log("logout")}
-        className="mt-auto mb-4 flex items-center gap-3 p-3 rounded-lg w-full bg-gray-700 hover:bg-red-600 transition text-white"
+        onClick={logout}
+        className="mt-6 flex w-full items-center gap-3 rounded-xl bg-slate-100 px-4 py-4 text-left text-slate-700 transition hover:bg-rose-50 hover:text-rose-700"
       >
-        <MdLogout className="text-lg shrink-0" />
+        <MdLogout className="shrink-0 text-lg" />
         Logout
       </button>
     </div>

@@ -1,18 +1,14 @@
 @import "tailwindcss";
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: black;
-  color: white;
+  background: #ffffff;
+  color: #111827;
 }
 
-h1 {
-  font-family: var(--font-merriweather), serif;
-  font-size: 30px;
+a {
+  text-decoration: none;
 }
-
-p, h2 {
-  font-family: var(--font-cantarell), sans-serif;
-  font-weight: 100;
-  font-style: normal;
-}
-
